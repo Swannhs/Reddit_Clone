@@ -5,7 +5,13 @@ import com.swann.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api")
@@ -15,8 +21,16 @@ public class UserController {
 
 
     @PostMapping("/new")
-    public ResponseEntity<?> register(@RequestBody User user){
-        System.out.println("Called");
-        return new ResponseEntity<User>(service.register(user), HttpStatus.ACCEPTED);
+    public ResponseEntity<?> register(@Valid @RequestBody User user, BindingResult result) {
+        if (result.hasErrors()) {
+            Map<String, String> errorMap = new HashMap<>();
+            for (FieldError error : result.getFieldErrors()) {
+                errorMap.put(error.getField(), error.getDefaultMessage());
+            }
+            return new ResponseEntity<>(errorMap, HttpStatus.BAD_REQUEST);
+        }
+
+        User response = service.register(user);
+        return new ResponseEntity<User>(response, HttpStatus.ACCEPTED);
     }
 }
