@@ -24,4 +24,8 @@ public class AuthController {
         authService.verifyAccount(token);
         return new ResponseEntity<>("Account is activated successfully", HttpStatus.ACCEPTED);
     }
+    @PostMapping("/login")
+    public void login(){
+
+    }
 }

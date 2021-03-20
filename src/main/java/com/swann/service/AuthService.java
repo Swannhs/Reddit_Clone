@@ -1,5 +1,6 @@
 package com.swann.service;
 
+import com.swann.dto.LoginRequest;
 import com.swann.dto.RegisterRequest;
 import com.swann.exceptions.SpringRedditException;
 import com.swann.model.NotificationEmail;
@@ -7,27 +8,35 @@ import com.swann.model.User;
 import com.swann.model.VerificationToken;
 import com.swann.repository.UserRepository;
 import com.swann.repository.VerificationTokenRepository;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.time.Instant;
 import java.util.Optional;
 import java.util.UUID;
 
 @Service
+@AllArgsConstructor
+@Transactional
 public class AuthService {
     @Autowired
-    private PasswordEncoder encoder;
+    private final PasswordEncoder encoder;
 
     @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
 
     @Autowired
-    private VerificationTokenRepository verificationTokenRepository;
+    private final VerificationTokenRepository verificationTokenRepository;
 
     @Autowired
-    private MailService mailService;
+    private final MailService mailService;
+
+    private final AuthenticationManager authenticationManager;
 
     public void signUp(RegisterRequest registerRequest) {
         User user = new User();
@@ -69,5 +78,11 @@ public class AuthService {
                 -> new SpringRedditException("User not found with name - " + username));
         user.setEnabled(true);
         userRepository.save(user);
+    }
+
+    public void login(LoginRequest loginRequest) {
+        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
+                loginRequest.getPassword(), loginRequest.getPassword()
+        ));
     }
 }
