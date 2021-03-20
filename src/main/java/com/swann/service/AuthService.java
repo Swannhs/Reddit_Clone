@@ -1,6 +1,7 @@
 package com.swann.service;
 
 import com.swann.dto.RegisterRequest;
+import com.swann.exceptions.SpringRedditException;
 import com.swann.model.NotificationEmail;
 import com.swann.model.User;
 import com.swann.model.VerificationToken;
@@ -11,6 +12,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -27,7 +29,7 @@ public class AuthService {
     @Autowired
     private MailService mailService;
 
-    public void signUp(RegisterRequest registerRequest){
+    public void signUp(RegisterRequest registerRequest) {
         User user = new User();
         user.setUsername(registerRequest.getUsername());
         user.setEmail(registerRequest.getEmail());
@@ -53,5 +55,19 @@ public class AuthService {
 
         verificationTokenRepository.save(token);
         return verificationToken;
+    }
+
+    public void verifyAccount(String token) {
+        Optional<VerificationToken> verificationToken = verificationTokenRepository.findByToken(token);
+        verificationToken.orElseThrow(() -> new SpringRedditException("Invalid token"));
+        fetchUserAndEnable(verificationToken.get());
+    }
+
+    private void fetchUserAndEnable(VerificationToken verificationToken) {
+        String username = verificationToken.getUser().getUsername();
+        User user = userRepository.findByUsername(username).orElseThrow(()
+                -> new SpringRedditException("User not found with name - " + username));
+        user.setEnabled(true);
+        userRepository.save(user);
     }
 }
