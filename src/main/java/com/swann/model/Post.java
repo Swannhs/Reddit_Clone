@@ -12,7 +12,7 @@ import java.time.Instant;
 public class Post {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long postId;
 
     @NotBlank(message = "Title is required")
     private String title;
