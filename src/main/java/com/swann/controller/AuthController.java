@@ -13,12 +13,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
-//    @Autowired
-//    private AuthService authService;
-//
-//    @PostMapping("/signup")
-//    public ResponseEntity<String> signup(@RequestBody RegisterRequest registerRequest) {
-//        authService.signUp(registerRequest);
-//        return new ResponseEntity<>("User Registration Successful", HttpStatus.OK);
-//    }
+    @Autowired
+    private AuthService authService;
+
+    @PostMapping("/signup")
+    public ResponseEntity<String> signup(@RequestBody RegisterRequest registerRequest) {
+        authService.signUp(registerRequest);
+        return new ResponseEntity<>("User Registration Successful", HttpStatus.OK);
+    }
 }
