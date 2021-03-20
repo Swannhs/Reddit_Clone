@@ -12,7 +12,7 @@ import java.util.List;
 public class Subreddit {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long subredditId;
 
     @NotBlank(message = "Community name is required")
     private String name;
