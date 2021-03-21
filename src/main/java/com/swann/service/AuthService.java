@@ -28,21 +28,11 @@ import java.util.UUID;
 @AllArgsConstructor
 @Transactional
 public class AuthService {
-    @Autowired
     private final PasswordEncoder encoder;
-
-    @Autowired
     private final UserRepository userRepository;
-
-    @Autowired
     private final VerificationTokenRepository verificationTokenRepository;
-
-    @Autowired
     private final MailService mailService;
-
-    @Autowired
     private final JwtProvider jwtProvider;
-
     private final AuthenticationManager authenticationManager;
 
     public void signUp(RegisterRequest registerRequest) {
@@ -91,7 +81,7 @@ public class AuthService {
         Authentication authenticate = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getUsername(),
                 loginRequest.getPassword()));
         SecurityContextHolder.getContext().setAuthentication(authenticate);
-//        String token = jwtProvider.generateToken(authenticate);
-        return new AuthenticationResponse("token", loginRequest.getUsername());
+        String token = jwtProvider.generateToken(authenticate);
+        return new AuthenticationResponse(token, loginRequest.getUsername());
     }
 }
