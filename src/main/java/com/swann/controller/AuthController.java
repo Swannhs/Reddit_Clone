@@ -1,5 +1,7 @@
 package com.swann.controller;
 
+import com.swann.dto.AuthenticationResponse;
+import com.swann.dto.LoginRequest;
 import com.swann.dto.RegisterRequest;
 import com.swann.service.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +27,7 @@ public class AuthController {
         return new ResponseEntity<>("Account is activated successfully", HttpStatus.ACCEPTED);
     }
     @PostMapping("/login")
-    public void login(){
-
+    public AuthenticationResponse login(@RequestBody LoginRequest loginRequest){
+        return authService.login(loginRequest);
     }
 }

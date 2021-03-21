@@ -1,5 +1,6 @@
 package com.swann.service;
 
+import com.swann.dto.AuthenticationResponse;
 import com.swann.dto.LoginRequest;
 import com.swann.dto.RegisterRequest;
 import com.swann.exceptions.SpringRedditException;
@@ -8,10 +9,13 @@ import com.swann.model.User;
 import com.swann.model.VerificationToken;
 import com.swann.repository.UserRepository;
 import com.swann.repository.VerificationTokenRepository;
+import com.swann.security.JwtProvider;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -35,6 +39,9 @@ public class AuthService {
 
     @Autowired
     private final MailService mailService;
+
+    @Autowired
+    private final JwtProvider jwtProvider;
 
     private final AuthenticationManager authenticationManager;
 
@@ -80,9 +87,11 @@ public class AuthService {
         userRepository.save(user);
     }
 
-    public void login(LoginRequest loginRequest) {
-        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
-                loginRequest.getPassword(), loginRequest.getPassword()
-        ));
+    public AuthenticationResponse login(LoginRequest loginRequest) {
+        Authentication authenticate = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getUsername(),
+                loginRequest.getPassword()));
+        SecurityContextHolder.getContext().setAuthentication(authenticate);
+//        String token = jwtProvider.generateToken(authenticate);
+        return new AuthenticationResponse("token", loginRequest.getUsername());
     }
 }

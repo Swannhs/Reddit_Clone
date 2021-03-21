@@ -16,30 +16,30 @@ import java.security.cert.CertificateException;
 public class JwtProvider {
     private KeyStore keyStore;
 
-    @PostConstruct
-    public void init(){
-        try {
-            keyStore = KeyStore.getInstance("JSK");
-            InputStream resourceAsStream = getClass().getResourceAsStream("/springBlog.jks");
-            keyStore.load(resourceAsStream, "secret".toCharArray());
-        } catch (KeyStoreException | CertificateException | NoSuchAlgorithmException | IOException exception) {
-            throw new SpringRedditException("Exception occurred while loading keystore");
-        }
-    }
-
-    public String generateToken(Authentication authentication){
-        User user = (User) authentication.getPrincipal();
-        return Jwts.builder()
-                .setSubject(user.getUsername())
-                .signWith(getPrivateKey())
-                .compact();
-    }
-
-    private PrivateKey getPrivateKey() {
-        try {
-            return (PrivateKey) keyStore.getKey("springBlog", "secret".toCharArray());
-        }catch (KeyStoreException | NoSuchAlgorithmException | UnrecoverableKeyException exception){
-            throw new SpringRedditException("Exception occurred while retrieving public key from keystore");
-        }
-    }
+//    @PostConstruct
+//    public void init(){
+//        try {
+//            keyStore = KeyStore.getInstance("JKS");
+//            InputStream resourceAsStream = getClass().getResourceAsStream("/springBlog.jks");
+//            keyStore.load(resourceAsStream, "secret".toCharArray());
+//        } catch (KeyStoreException | CertificateException | NoSuchAlgorithmException | IOException exception) {
+//            throw new SpringRedditException("Exception occurred while loading keystore");
+//        }
+//    }
+//
+//    public String generateToken(Authentication authentication){
+//        User user = (User) authentication.getPrincipal();
+//        return Jwts.builder()
+//                .setSubject(user.getUsername())
+//                .signWith(getPrivateKey())
+//                .compact();
+//    }
+//
+//    private PrivateKey getPrivateKey() {
+//        try {
+//            return (PrivateKey) keyStore.getKey("springBlog", "secret".toCharArray());
+//        }catch (KeyStoreException | NoSuchAlgorithmException | UnrecoverableKeyException exception){
+//            throw new SpringRedditException("Exception occurred while retrieving public key from keystore");
+//        }
+//    }
 }
